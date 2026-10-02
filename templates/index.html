@@ -1,0 +1,991 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>EduGenie - Smart AI Tutor</title>
+<link rel="stylesheet" href="/static/style.css">
+<style>
+* { box-sizing: border-box; }
+
+html, body {
+    width: 100%;
+    min-width: 0;
+    min-height: 100%;
+    margin: 0;
+}
+
+body {
+    font-family: "Segoe UI", Arial, sans-serif;
+    background: #f4f8ff;
+    color: #17325f;
+    min-height: 100vh;
+}
+
+.app {
+    display: flex;
+    width: 100%;
+    max-width: none;
+    min-height: 100vh;
+    margin: 0;
+}
+
+.sidebar {
+    width: 265px;
+    flex: 0 0 265px;
+    background: #fff;
+    border-right: 1px solid #e4ecfa;
+    padding: 25px 13px;
+    min-height: 100vh;
+}
+
+.brand {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 0 7px;
+    margin-bottom: 30px;
+}
+
+.logo {
+    width: 43px;
+    height: 43px;
+    border-radius: 13px;
+    background: #1765e9;
+    color: #fff;
+    display: grid;
+    place-items: center;
+    font-size: 23px;
+}
+
+.brand h2 {
+    font-size: 21px;
+    margin: 0;
+    color: #17325f;
+}
+
+.brand small { color: #8295b9; }
+
+nav {
+    display: grid;
+    gap: 8px;
+}
+
+nav button {
+    width: 100%;
+    border: 0;
+    border-radius: 12px;
+    background: transparent;
+    padding: 13px 12px;
+    text-align: left;
+    font-size: 15px;
+    color: #18345f;
+    cursor: pointer;
+}
+
+nav button:hover,
+nav button.active {
+    background: #e8f2ff;
+    color: #0865ef;
+}
+
+.nav-icon {
+    display: inline-block;
+    width: 32px;
+    font-size: 18px;
+}
+
+main {
+    display: block;
+    flex: 1 1 0%;
+    width: auto;
+    max-width: none;
+    min-width: 0;
+    margin: 0;
+    padding: 55px 5%;
+}
+
+.content {
+    display: block;
+    width: 100%;
+    max-width: none;
+    min-width: 0;
+    margin: 0 auto;
+}
+
+.page { display: none; }
+.page.active { display: block; }
+
+.content > .page { width: 100%; max-width: none; }
+
+h1 {
+    font-size: 27px;
+    margin: 0 0 8px;
+    color: #102e65;
+}
+
+.subtitle {
+    color: #7185a9;
+    margin: 0 0 27px;
+    line-height: 1.6;
+}
+
+.panel {
+    background: #fff;
+    border: 1px solid #dce9fc;
+    border-radius: 11px;
+    padding: 24px;
+    box-shadow: 0 4px 20px rgba(45,90,150,.025);
+}
+
+.quick-title {
+    font-size: 12px;
+    color: #8093b6;
+    font-weight: 700;
+    letter-spacing: .7px;
+    margin-bottom: 13px;
+}
+
+.chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 9px;
+    margin-bottom: 25px;
+}
+
+.chip {
+    background: #eff5ff;
+    color: #31527f;
+    border: 0;
+    padding: 10px 17px;
+    border-radius: 22px;
+    cursor: pointer;
+    font-size: 13px;
+}
+
+.chip:hover { background: #dceaff; }
+
+input, textarea, select {
+    width: 100%;
+    border: 1px solid #d8e7fc;
+    border-radius: 9px;
+    padding: 13px 15px;
+    font: inherit;
+    color: #18345f;
+    background: #fff;
+    outline: none;
+}
+
+input:focus, textarea:focus, select:focus {
+    border-color: #3983f5;
+    box-shadow: 0 0 0 2px #e8f2ff;
+}
+
+textarea {
+    min-height: 120px;
+    resize: vertical;
+}
+
+.controls {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    flex-wrap: wrap;
+    margin-top: 18px;
+}
+
+.depth {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    color: #627da9;
+    font-size: 14px;
+}
+
+.depth select, .controls > select {
+    width: auto;
+    min-width: 165px;
+    padding: 10px 14px;
+}
+
+.primary {
+    background: #1264ec;
+    color: #fff;
+    border: 0;
+    border-radius: 11px;
+    padding: 13px 20px;
+    font-weight: 600;
+    cursor: pointer;
+    font-size: 14px;
+}
+
+.primary:hover { background: #084fc9; }
+
+.primary:disabled {
+    opacity: .6;
+    cursor: wait;
+}
+
+.output {
+    display: none;
+    margin-top: 22px;
+    padding: 20px;
+    border: 1px solid #dce9fc;
+    border-radius: 11px;
+    background: #fff;
+    white-space: pre-wrap;
+    overflow-wrap: anywhere;
+    line-height: 1.7;
+    color: #304c76;
+}
+
+.output.error {
+    background: #fff0f0;
+    color: #a12828;
+}
+
+.quiz-card {
+    margin: 16px 0;
+    padding: 16px;
+    background: #fff;
+    border: 1px solid #dce1f2;
+    border-radius: 9px;
+}
+
+.quiz-question { font-weight: bold; }
+
+.quiz-option {
+    display: flex;
+    align-items: flex-start;
+    gap: 9px;
+    padding: 10px;
+    margin: 6px 0;
+    border: 1px solid #e0e4f0;
+    border-radius: 7px;
+    cursor: pointer;
+}
+
+.quiz-option:hover { background: #f1f5ff; }
+
+.quiz-option input {
+    width: auto;
+    margin: 3px 0 0;
+    flex-shrink: 0;
+}
+
+.feedback { font-weight: bold; }
+
+form label {
+    display: block;
+    margin-bottom: 7px;
+    color: #627da9;
+    font-size: 14px;
+}
+
+/* Learning Roadmap Cards */
+
+#learnResult {
+    white-space: normal;
+    overflow-wrap: anywhere;
+    padding: 22px;
+    line-height: 1.6;
+}
+
+.roadmap-intro {
+    margin-bottom: 20px;
+    color: #526b91;
+    line-height: 1.7;
+}
+
+.roadmap-card {
+    background: #f9fbff;
+    border: 1px solid #dce8fb;
+    border-left: 5px solid #3478ed;
+    border-radius: 12px;
+    padding: 20px;
+    margin: 16px 0;
+    box-shadow: 0 3px 12px rgba(45,90,150,.05);
+}
+
+.roadmap-card h3 {
+    margin: 0 0 12px;
+    color: #17458d;
+    font-size: 18px;
+}
+
+.roadmap-card p {
+    color: #496183;
+    margin: 9px 0;
+}
+
+.roadmap-card ul {
+    padding-left: 22px;
+    margin: 10px 0;
+    color: #496183;
+}
+
+.roadmap-card li { margin: 8px 0; }
+
+.roadmap-card strong { color: #17325f; }
+
+.roadmap-card.stage-card {
+    border-left-color: #16a085;
+    background: #fff;
+}
+
+.roadmap-card.stage-card h3 { color: #147d69; }
+
+.roadmap-card.goal-card { border-left-color: #8b5cf6; }
+
+.roadmap-card.prerequisite-card { border-left-color: #e7a12d; }
+
+.roadmap-card h4 {
+    color: #244a7e;
+    margin: 15px 0 8px;
+}
+
+.roadmap-card > :last-child { margin-bottom: 0; }
+
+@media (max-width: 760px) {
+    .app { flex-direction: column; }
+
+    .sidebar {
+        width: 100%;
+        min-height: auto;
+        flex: 0 0 auto;
+        padding: 13px;
+    }
+
+    .brand { margin-bottom: 12px; }
+
+    nav {
+        display: flex;
+        overflow-x: auto;
+        gap: 4px;
+    }
+
+    nav button {
+        width: auto;
+        white-space: nowrap;
+        padding: 10px;
+        font-size: 13px;
+    }
+
+    .nav-icon {
+        width: auto;
+        margin-right: 5px;
+    }
+
+    main { width: 100%; padding: 30px 16px; }
+
+    h1 { font-size: 23px; }
+
+    .panel { padding: 17px; }
+
+    #learnResult { padding: 14px; }
+
+    .roadmap-card { padding: 15px; }
+}
+</style>
+</head>
+
+<body>
+<div class="app">
+<aside class="sidebar">
+    <div class="brand">
+        <div class="logo">✿</div>
+        <div>
+            <h2>EduGenie</h2>
+            <small>Smart AI Tutor</small>
+        </div>
+    </div>
+
+    <nav aria-label="Main navigation">
+        <button class="active" type="button" onclick="showPage('topicPage',this)">
+            <span class="nav-icon">💡</span>Topic Explainer
+        </button>
+        <button type="button" onclick="showPage('qnaPage',this)">
+            <span class="nav-icon">❔</span>Direct QnA
+        </button>
+        <button type="button" onclick="showPage('quizPage',this)">
+            <span class="nav-icon">📋</span>Interactive Quiz
+        </button>
+        <button type="button" onclick="showPage('learnPage',this)">
+            <span class="nav-icon">🧩</span>Learning Roadmap
+        </button>
+        <button type="button" onclick="showPage('summaryPage',this)">
+            <span class="nav-icon">✨</span>Summarizer &amp; Notes
+        </button>
+    </nav>
+</aside>
+
+<main>
+<div class="content">
+
+<!-- Topic Explainer -->
+<section class="page active" id="topicPage">
+    <h1>💡 AI Topic Explainer &amp; Summarizer</h1>
+    <p class="subtitle">Break down complex topics into easy-to-understand explanations with key takeaways.</p>
+
+    <div class="panel">
+        <div class="quick-title">QUICK SUGGESTIONS</div>
+        <div class="chips">
+            <button type="button" class="chip" onclick="document.getElementById('topic').value='Quantum Computing'">Quantum Computing</button>
+            <button type="button" class="chip" onclick="document.getElementById('topic').value='Industrial Revolution'">Industrial Revolution</button>
+            <button type="button" class="chip" onclick="document.getElementById('topic').value='Photosynthesis'">Photosynthesis</button>
+            <button type="button" class="chip" onclick="document.getElementById('topic').value='Black Holes'">Black Holes</button>
+        </div>
+
+        <form id="explainForm">
+            <label for="topic">Enter a topic or topic question</label>
+            <input type="text" id="topic" placeholder="Enter a topic or topic question..." required>
+            <div class="controls">
+                <div class="depth">
+                    <label for="depth">Depth:</label>
+                    <select id="depth">
+                        <option>Simple</option>
+                        <option selected>Standard Academic</option>
+                        <option>Detailed</option>
+                    </select>
+                </div>
+                <button class="primary" type="submit">➤ Explain Topic</button>
+            </div>
+        </form>
+    </div>
+    <div id="explanationResult" class="output"></div>
+</section>
+
+<!-- Q&A -->
+<section class="page" id="qnaPage">
+    <h1>❔ Direct Knowledge QnA</h1>
+    <p class="subtitle">Ask direct questions and get instant factual synthesized answers.</p>
+
+    <div class="panel">
+        <div class="quick-title">QUICK SUGGESTIONS</div>
+        <div class="chips">
+            <button type="button" class="chip" onclick="document.getElementById('question').value='What is the largest ocean?'">Largest Ocean?</button>
+            <button type="button" class="chip" onclick="document.getElementById('question').value='What causes gravity?'">What causes gravity?</button>
+            <button type="button" class="chip" onclick="document.getElementById('question').value='Who invented the computer?'">Computer inventor?</button>
+        </div>
+
+        <form id="qaForm">
+            <label for="question">Ask any factual question</label>
+            <input type="text" id="question" placeholder="Ask any factual question directly..." required>
+            <div class="controls">
+                <span></span>
+                <button class="primary" type="submit">➤ Get Answer</button>
+            </div>
+        </form>
+    </div>
+    <div id="qaResult" class="output"></div>
+</section>
+
+<!-- Quiz -->
+<section class="page" id="quizPage">
+    <h1>📋 Interactive Quiz</h1>
+    <p class="subtitle">Test your knowledge and improve your understanding.</p>
+
+    <div class="panel">
+        <div class="quick-title">CREATE YOUR QUIZ</div>
+        <form id="quizForm">
+            <label for="quizText">Enter text or a topic for a quiz</label>
+            <textarea id="quizText" placeholder="Enter learning material here..." required></textarea>
+            <div class="controls">
+                <span></span>
+                <button class="primary" type="submit">✦ Generate Quiz</button>
+            </div>
+        </form>
+    </div>
+    <div id="quizResult" class="output"></div>
+</section>
+
+<!-- Learning Roadmap -->
+<section class="page" id="learnPage">
+    <h1>🧩 Learning Roadmap</h1>
+    <p class="subtitle">Create a structured learning path for any subject or skill.</p>
+
+    <div class="panel">
+        <div class="quick-title">BUILD YOUR LEARNING PATH</div>
+        <form id="learnForm">
+            <label for="learnTopic">What do you want to learn?</label>
+            <input type="text" id="learnTopic" placeholder="e.g. Python programming" required>
+            <div class="controls">
+                <span></span>
+                <button class="primary" type="submit">✦ Create Roadmap</button>
+            </div>
+        </form>
+    </div>
+    <div id="learnResult" class="output"></div>
+</section>
+
+<!-- Summary -->
+<section class="page" id="summaryPage">
+    <h1>✨ Summarizer &amp; Notes</h1>
+    <p class="subtitle">Turn lengthy content into clear summaries and useful study notes.</p>
+
+    <div class="panel">
+        <div class="quick-title">YOUR STUDY MATERIAL</div>
+        <form id="summaryForm">
+            <label for="summaryText">Paste the text you want to summarize</label>
+            <textarea id="summaryText" placeholder="Paste your paragraph here..." required></textarea>
+            <div class="controls">
+                <span></span>
+                <button class="primary" type="submit">✦ Summarize</button>
+            </div>
+        </form>
+    </div>
+    <div id="summaryResult" class="output"></div>
+</section>
+
+</div>
+</main>
+</div>
+
+<script>
+function showPage(id, button) {
+    document.querySelectorAll(".page").forEach(p => p.classList.remove("active"));
+    document.getElementById(id).classList.add("active");
+    document.querySelectorAll("nav button").forEach(b => b.classList.remove("active"));
+    button.classList.add("active");
+}
+
+// Display normal module results safely
+function showResult(elementId, data, isError = false) {
+    const output = document.getElementById(elementId);
+    output.style.display = "block";
+    output.classList.toggle("error", isError);
+    output.replaceChildren();
+
+    if (typeof data === "string") {
+        output.textContent = data;
+    } else {
+        output.textContent = JSON.stringify(data, null, 2);
+    }
+}
+
+// Safely render Markdown bold formatting
+function addFormattedText(parent, text) {
+    const parts = String(text).split(/(\*\*.*?\*\*)/g);
+
+    parts.forEach(part => {
+        if (part.startsWith("**") && part.endsWith("**")) {
+            const strong = document.createElement("strong");
+            strong.textContent = part.slice(2, -2);
+            parent.appendChild(strong);
+        } else if (part) {
+            parent.appendChild(document.createTextNode(part));
+        }
+    });
+}
+
+// Display roadmap in separate cards
+function renderRoadmap(elementId, data) {
+    const output = document.getElementById(elementId);
+    output.style.display = "block";
+    output.classList.remove("error");
+    output.replaceChildren();
+
+    if (typeof data !== "string") {
+        if (data && typeof data === "object") {
+            data = data.recommendation
+                ?? data.roadmap
+                ?? data.learning_path
+                ?? data.answer
+                ?? data.content
+                ?? JSON.stringify(data, null, 2);
+        } else {
+            data = String(data ?? "");
+        }
+    }
+
+    try {
+        const parsed = JSON.parse(data);
+        if (parsed && typeof parsed === "object") {
+            data = parsed.recommendation
+                ?? parsed.roadmap
+                ?? parsed.learning_path
+                ?? parsed.answer
+                ?? parsed.content
+                ?? data;
+
+            if (typeof data !== "string") {
+                data = JSON.stringify(data, null, 2);
+            }
+        }
+    } catch {
+        // Use ordinary text or Markdown
+    }
+
+    if (!data.trim()) {
+        showResult(elementId, "No roadmap content was returned. Please try again.", true);
+        return;
+    }
+
+    const lines = data.split(/\r?\n/);
+    let currentCard = null;
+    let currentList = null;
+
+    const intro = document.createElement("div");
+    intro.className = "roadmap-intro";
+    output.appendChild(intro);
+
+    function createCard(title) {
+        const card = document.createElement("div");
+        card.className = "roadmap-card";
+
+        if (/stage\s*\d+/i.test(title)) {
+            card.classList.add("stage-card");
+        } else if (/learning goal|goal/i.test(title)) {
+            card.classList.add("goal-card");
+        } else if (/prerequisite/i.test(title)) {
+            card.classList.add("prerequisite-card");
+        }
+
+        const heading = document.createElement("h3");
+        addFormattedText(heading, title.replace(/\*\*/g, ""));
+        card.appendChild(heading);
+
+        output.appendChild(card);
+        currentCard = card;
+        currentList = null;
+    }
+
+    lines.forEach(rawLine => {
+        const line = rawLine.trim();
+
+        if (!line || /^---+$/.test(line)) {
+            currentList = null;
+            return;
+        }
+
+        const headingMatch = line.match(/^#{1,6}\s+(.+)$/);
+
+        if (headingMatch) {
+            const title = headingMatch[1].replace(/\*\*/g, "").trim();
+
+            if (/step-by-step learning path/i.test(title)) {
+                const heading = document.createElement("h3");
+                heading.textContent = title;
+                heading.style.color = "#17458d";
+                heading.style.margin = "20px 0 10px";
+                output.appendChild(heading);
+                currentCard = null;
+                currentList = null;
+            } else {
+                createCard(title);
+            }
+            return;
+        }
+
+        if (!currentCard && intro.childNodes.length > 0) {
+            createCard("Learning Overview");
+        }
+
+        const target = currentCard || intro;
+        const bulletMatch = line.match(/^[*+-]\s+(.+)$/);
+
+        if (bulletMatch) {
+            if (!currentList) {
+                currentList = document.createElement("ul");
+                target.appendChild(currentList);
+            }
+
+            const li = document.createElement("li");
+            addFormattedText(li, bulletMatch[1]);
+            currentList.appendChild(li);
+            return;
+        }
+
+        const cleanLine = line.replace(/\*\*/g, "").trim();
+
+        if (/^(what to learn|learning activities|resources|practice|outcome|duration)\s*:/i.test(cleanLine)) {
+            const h4 = document.createElement("h4");
+            addFormattedText(h4, cleanLine);
+            target.appendChild(h4);
+            currentList = null;
+            return;
+        }
+
+        const p = document.createElement("p");
+        addFormattedText(p, line);
+        target.appendChild(p);
+        currentList = null;
+    });
+
+    if (!output.textContent.trim()) {
+        showResult(elementId, "No roadmap content was returned. Please try again.", true);
+    }
+}
+
+// Send request to FastAPI
+async function sendRequest(url, method, body = null) {
+    const options = { method };
+
+    if (body !== null) {
+        options.headers = { "Content-Type": "application/json" };
+        options.body = JSON.stringify(body);
+    }
+
+    const response = await fetch(url, options);
+    const raw = await response.text();
+
+    let data;
+    try {
+        data = JSON.parse(raw);
+    } catch {
+        data = raw;
+    }
+
+    if (!response.ok) {
+        const detail = typeof data === "object" && data !== null
+            ? (data.detail || data.error || JSON.stringify(data))
+            : data;
+
+        throw new Error(`HTTP ${response.status}: ${detail}`);
+    }
+
+    if (data && typeof data === "object" && data.error) {
+        throw new Error(data.error);
+    }
+
+    return data;
+}
+
+// Interactive quiz rendering
+function renderQuiz(elementId, questions) {
+    const output = document.getElementById(elementId);
+    output.style.display = "block";
+    output.classList.remove("error");
+    output.replaceChildren();
+
+    if (questions && !Array.isArray(questions) && Array.isArray(questions.quiz)) {
+        questions = questions.quiz;
+    }
+
+    if (typeof questions === "string") {
+        try {
+            questions = JSON.parse(questions);
+        } catch {
+            showResult(elementId, questions, true);
+            return;
+        }
+    }
+
+    if (!Array.isArray(questions) || questions.length === 0) {
+        showResult(elementId, "No quiz questions were returned. Please try again.", true);
+        return;
+    }
+
+    const errorQuestion = questions.find(q => q && q.error);
+    if (errorQuestion) {
+        showResult(elementId, errorQuestion.error, true);
+        return;
+    }
+
+    const valid = questions.every(q =>
+        q &&
+        typeof q.question === "string" &&
+        Array.isArray(q.options) &&
+        q.options.length > 0 &&
+        typeof q.answer === "string"
+    );
+
+    if (!valid) {
+        showResult(elementId, "The quiz response was not in the expected format. Please try again.", true);
+        return;
+    }
+
+    const heading = document.createElement("h3");
+    heading.textContent = "Your Quiz";
+    output.appendChild(heading);
+
+    const selections = [];
+
+    questions.forEach((q, index) => {
+        const card = document.createElement("div");
+        card.className = "quiz-card";
+
+        const question = document.createElement("p");
+        question.className = "quiz-question";
+        question.textContent = `${index + 1}. ${q.question}`;
+        card.appendChild(question);
+
+        const radios = [];
+
+        q.options.forEach(option => {
+            const label = document.createElement("label");
+            label.className = "quiz-option";
+
+            const radio = document.createElement("input");
+            radio.type = "radio";
+            radio.name = `quiz-question-${index}`;
+            radio.value = String(option);
+
+            const optionText = document.createElement("span");
+            optionText.textContent = String(option);
+
+            label.appendChild(radio);
+            label.appendChild(optionText);
+            card.appendChild(label);
+            radios.push(radio);
+        });
+
+        const feedback = document.createElement("p");
+        feedback.className = "feedback";
+        feedback.setAttribute("aria-live", "polite");
+        card.appendChild(feedback);
+        output.appendChild(card);
+
+        selections.push({ radios, feedback, question: q });
+    });
+
+    const checkButton = document.createElement("button");
+    checkButton.type = "button";
+    checkButton.className = "primary";
+    checkButton.textContent = "Check Answers";
+    output.appendChild(checkButton);
+
+    const scoreText = document.createElement("p");
+    scoreText.style.fontWeight = "bold";
+    scoreText.setAttribute("aria-live", "polite");
+    output.appendChild(scoreText);
+
+    checkButton.addEventListener("click", () => {
+        let score = 0;
+        let unanswered = false;
+
+        selections.forEach(({ radios, feedback, question }) => {
+            const selected = radios.find(radio => radio.checked);
+
+            if (!selected) {
+                unanswered = true;
+                feedback.textContent = "Please select an answer.";
+                feedback.style.color = "#a16207";
+                return;
+            }
+
+            const correct = selected.value.trim() === question.answer.trim();
+
+            if (correct) score++;
+
+            feedback.textContent = correct
+                ? "Correct!"
+                : `Incorrect. Correct answer: ${question.answer}`;
+
+            feedback.style.color = correct ? "#15803d" : "#b91c1c";
+        });
+
+        if (unanswered) {
+            scoreText.textContent = "Please answer all questions.";
+            return;
+        }
+
+        scoreText.textContent = `Your score: ${score} / ${selections.length}`;
+        checkButton.disabled = true;
+
+        selections.forEach(({ radios }) => {
+            radios.forEach(radio => radio.disabled = true);
+        });
+    });
+}
+
+// Handle form submissions
+function setupForm(formId, resultId, getRequest) {
+    const form = document.getElementById(formId);
+    const button = form.querySelector("button");
+
+    form.dataset.buttonText = button.textContent;
+
+    form.addEventListener("submit", async event => {
+        event.preventDefault();
+
+        button.disabled = true;
+        button.textContent = "Please wait...";
+        showResult(resultId, "Generating response...");
+
+        try {
+            const { url, method, body } = getRequest();
+            const data = await sendRequest(url, method, body);
+
+            const result = data && typeof data === "object"
+                ? (
+                    data.answer
+                    ?? data.explanation
+                    ?? data.summary
+                    ?? data.quiz
+                    ?? data.recommendation
+                    ?? data.roadmap
+                    ?? data.learning_path
+                    ?? data.content
+                    ?? data
+                )
+                : data;
+
+            if (formId === "quizForm") {
+                renderQuiz(resultId, result);
+            } else if (formId === "learnForm") {
+                renderRoadmap(resultId, result);
+            } else {
+                showResult(resultId, result);
+            }
+
+        } catch (error) {
+            showResult(resultId, error.message || "Something went wrong.", true);
+        } finally {
+            button.disabled = false;
+            button.textContent = form.dataset.buttonText;
+        }
+    });
+}
+
+// Q&A
+setupForm("qaForm", "qaResult", () => {
+    const question = document.getElementById("question").value.trim();
+
+    return {
+        url: "/qa?question=" + encodeURIComponent(question),
+        method: "GET"
+    };
+});
+
+// Topic Explanation
+setupForm("explainForm", "explanationResult", () => ({
+    url: "/explain/",
+    method: "POST",
+    body: {
+        topic: document.getElementById("topic").value.trim()
+    }
+}));
+
+// Summary
+setupForm("summaryForm", "summaryResult", () => ({
+    url: "/summarize/",
+    method: "POST",
+    body: {
+        text: document.getElementById("summaryText").value.trim()
+    }
+}));
+
+// Quiz
+setupForm("quizForm", "quizResult", () => ({
+    url: "/quiz/",
+    method: "POST",
+    body: {
+        text: document.getElementById("quizText").value.trim()
+    }
+}));
+
+// Learning Recommendations
+setupForm("learnForm", "learnResult", () => {
+    const topic = document.getElementById("learnTopic").value.trim();
+
+    return {
+        url: "/learning-path?topic=" + encodeURIComponent(topic),
+        method: "GET"
+    };
+});
+</script>
+</body>
+</html>
